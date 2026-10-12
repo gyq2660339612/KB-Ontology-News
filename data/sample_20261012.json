@@ -1,0 +1,359 @@
+{
+  "date": "2026-10-12",
+  "highlights": [
+    "微软 GraphRAG 官宣进入维护模式,生态重心向 LightRAG 等社区实现迁移——GraphRAG 选型正式进入“社区演进”阶段。",
+    "Agent 记忆赛道爆发:claude-mem 一年从 0 涨至约 10 万 star 并登上今日 GitHub Trending 周榜;HN 391 分热帖主张用「活文档 / Git 原生知识层」取代向量记忆插件;cognee 月增 7k,Graphiti/mem0 把时序知识图谱记忆推向生产级。",
+    "本体(Ontology)在国内企业级市场升温:国家数据局文件首次将本体与知识库、知识图谱并列,“数据中台→知识中台”成为主流叙事;开源侧 FalkorDB 以本体约束抽图、APOLO 实现无标注本体学习。",
+    "多跳推理失效的量化认知普及:中文社区热文给出“向量 RAG 3 跳准确率 15% vs GraphRAG 82-86%”的基准对照,混合路由(单跳向量/三跳走图)成为工程共识。",
+    "工业实证出现:arXiv 论文用“窄而深”本体塔支撑 LLM Agent 在真实工厂测试台每日运行,对半导体设备智能管控有直接借鉴意义。"
+  ],
+  "intranet_guide": [
+    "本期收录的 GitHub 项目全部可通过内网 Git 镜像或代理拉取;建议优先复现「内网复现·高」的项目。",
+    "依赖国外大模型 API 的项目几乎全部支持 OpenAI 兼容端点,可切换到内网部署的 vLLM / Ollama 模型服务。",
+    "模型权重与文档解析模型(MinerU / deepdoc 等)需在外网下载后,经制品库(Nexus / Harbor)或共享盘导入内网。",
+    "Python 依赖离线安装:外网机器执行 pip download -r requirements.txt -d packages/,内网执行 pip install --no-index --find-links=packages/ -r requirements.txt。",
+    "许可证审查:GitNexus 为非标准自定义许可证,商用前需法务确认;Graphiti 默认开启遥测,内网部署时设置 GRAPHITI_TELEMETRY_ENABLED=false 关闭。"
+  ],
+  "items": [
+    {
+      "title": "thedotmack/claude-mem — 一年 0→100k star 的 Agent 持久记忆",
+      "url": "https://github.com/thedotmack/claude-mem",
+      "source": "GitHub Trending 周榜",
+      "category": "github",
+      "published": "2026-10-12",
+      "summary": "为编程 Agent 提供跨会话持久上下文:记录 Agent 在会话中的所有行为,用 AI 压缩后在未来会话中按需注入相关上下文。支持 Claude Code / Codex / Gemini / Copilot / OpenCode 等主流工具。",
+      "key_points": [
+        "今日 GitHub Trending 周榜在榜,本周涨星 +3,803",
+        "2025-08 创建,13 个月从 0 涨至 ~99.9k star",
+        "“捕获→压缩→注入”三段式,与向量库方案形成对照"
+      ],
+      "effect": "Agent 记忆赛道增速最猛的项目;与本期 HN 热帖《Agents don't need memory》的“活文档”路线形成同向印证——记忆正在从插件变成基础设施。",
+      "repro_level": "高",
+      "repro_note": "作为编程 Agent 插件本地运行、记忆数据存本地;压缩环节需 LLM,可接 OpenAI 兼容端点。",
+      "image_url": "https://opengraph.githubassets.com/1/thedotmack/claude-mem",
+      "heat": "⭐ ~99.9k · 本周 +3.8k",
+      "tags": [
+        "Agent记忆",
+        "Trending在榜",
+        "增速最快"
+      ]
+    },
+    {
+      "title": "Egonex-AI/Understand-Anything — 代码库→可交互知识图谱,3 个月 +14k",
+      "url": "https://github.com/Egonex-AI/Understand-Anything",
+      "source": "GitHub 增速榜",
+      "category": "github",
+      "published": "2026-10-10",
+      "summary": "Claude Code / Codex / Cursor 等平台的插件:用多 Agent 流水线(Tree-sitter + LLM)把任意代码库/文档库变成可交互、可搜索、可问答的知识图谱。",
+      "key_points": [
+        "2026 年 3 月才创建,年内从零涨至 ~86k,近 3 个月 +14k",
+        "v2.9.0 新增 Figma 设计图分析,8 月起多次登上 GitHub Trending",
+        "图谱产物是纯 JSON,可离线共享"
+      ],
+      "effect": "把“隐性架构知识”显式化成图,解决新人上手超大代码库与变更影响分析问题,是“代码即知识图谱”赛道增速冠军之一。",
+      "repro_level": "中",
+      "repro_note": "分析阶段需要 LLM(API 或本地模型);强依赖 AI 编程工具生态,内网若无此类工具链价值打折。",
+      "image_url": "https://opengraph.githubassets.com/1/Egonex-AI/Understand-Anything",
+      "heat": "⭐ ~86k · 3个月 +14k",
+      "tags": [
+        "代码图谱",
+        "多Agent",
+        "增速榜"
+      ]
+    },
+    {
+      "title": "abhigyanpatwari/GitNexus — 浏览器内代码图谱,半年 0→47.8k",
+      "url": "https://github.com/abhigyanpatwari/GitNexus",
+      "source": "GitHub 增速榜",
+      "category": "github",
+      "published": "2026-10-10",
+      "summary": "零服务端代码智能引擎:完全在浏览器(WebAssembly)中把仓库解析成属性图,内置 Graph RAG 问答,并通过 MCP 给编程 Agent 提供代码结构感知。",
+      "key_points": [
+        "4 月单日 +1,195 star 登顶 GitHub Trending",
+        "索引期预计算依赖、调用链、影响半径,防 Agent“改一处崩一片”",
+        "厂商基准称接入后 Agent 成本降 51%"
+      ],
+      "effect": "为编程 Agent 补上结构化上下文,半年内从零涨至 ~47.8k star 且仍在增长。",
+      "repro_level": "中",
+      "repro_note": "浏览器端运行、代码不出本机,天然适合内网;但为非标准自定义许可证,商用前务必经法务审核。",
+      "image_url": "https://opengraph.githubassets.com/1/abhigyanpatwari/GitNexus",
+      "heat": "⭐ ~47.8k · 半年新增",
+      "tags": [
+        "代码图谱",
+        "MCP",
+        "WebAssembly"
+      ]
+    },
+    {
+      "title": "topoteretes/cognee — AI 记忆平台,一个月 +7k star",
+      "url": "https://github.com/topoteretes/cognee",
+      "source": "GitHub 增速榜",
+      "category": "github",
+      "published": "2026-10-07",
+      "summary": "开源 AI 记忆平台:用 ECL(Extract-Cognify-Load)管道把企业多源数据(Slack/Notion/数据库)转成“图+向量”知识层,几行代码给 Agent 加持久记忆。",
+      "key_points": [
+        "一个月 star 从 ~24.9k 涨至 ~32.1k,Agent 记忆赛道增速最快之一",
+        "v1.6.3 大幅改进时序检索精度,修正中文查询触发问题",
+        "v1.6.2 新增 Slack 历史导入、按模型 token 上限自动切块"
+      ],
+      "effect": "把企业散乱数据变成 Agent 可查询的结构化长期知识;中文场景可用性持续改善。",
+      "repro_level": "高",
+      "repro_note": "走 LiteLLM,LLM 后端可自由切换本地模型;有官方 Docker;注意 v1.6.x 有 breaking changes。",
+      "image_url": "https://opengraph.githubassets.com/1/topoteretes/cognee",
+      "heat": "⭐ ~32.1k · 月增 +7k",
+      "tags": [
+        "Agent记忆",
+        "图+向量",
+        "中文支持"
+      ]
+    },
+    {
+      "title": "HKUDS/RAG-Anything — 多模态一体化 RAG 新秀",
+      "url": "https://github.com/HKUDS/RAG-Anything",
+      "source": "GitHub 增速榜",
+      "category": "github",
+      "published": "2026-10-10",
+      "summary": "统一处理文本、图片、表格、公式的多模态 RAG 框架,底层基于 LightRAG 图谱结构;已正式并入 LightRAG 主生态,涨星持续加速。",
+      "key_points": [
+        "MinerU / Docling 解析 PDF、扫描件中的图表与公式",
+        "跨模态内容理解与图谱关联,论文 arXiv:2510.12323",
+        " LightRAG 生态(主仓 ~40k)的多模态入口"
+      ],
+      "effect": "直接命中半导体行业痛点:论文/手册中大量图表公式不再因纯文本切块而丢失,star 涨至 ~23.5k。",
+      "repro_level": "中",
+      "repro_note": "纯 Python,但需下载 MinerU/Docling 视觉模型权重(可镜像),建议配 GPU。",
+      "image_url": "https://opengraph.githubassets.com/1/HKUDS/RAG-Anything",
+      "heat": "⭐ ~23.5k · 快速攀升",
+      "tags": [
+        "多模态",
+        "文档解析",
+        "LightRAG生态"
+      ]
+    },
+    {
+      "title": "从数据中台到知识中台:企业级本体如何让 AI 理解并操作数字化生产环境",
+      "url": "https://www.36kr.com/p/4002515166400386",
+      "source": "36氪 · 海致科技",
+      "category": "domestic",
+      "published": "2026-09-28",
+      "summary": "海致科技基于与中国联通、能源、金融客户的本体建设实践,论证企业 AI 落地正从“模型能力比拼”进入“数据与知识基础设施竞争”阶段;国家数据局 6 月文件首次把本体与知识库、知识图谱并列,是重要政策催化。",
+      "key_points": [
+        "数据中台解决“数据在哪/可用”,知识中台回答“数据是什么意思/规则是什么/如何执行”",
+        "本体构建应从结构化数据向非结构化衍生(系统数据唯一性优于文档描述)",
+        "提出 Graph Engineering:统一语义打通 OLAP 到 OLTP",
+        "面向 AI 的多模数据库:图与向量打通、动态本体与时序图谱是未来难点"
+      ],
+      "effect": "给出运营商等行业本体落地路径;引用 Gartner 预测 2026 年新建核心系统多模架构比例超 60%。",
+      "repro_level": "中",
+      "repro_note": "方法论类文章,需结合自身业务数据建模实践落地。",
+      "heat": "行业实践分享",
+      "tags": [
+        "知识中台",
+        "本体",
+        "企业落地"
+      ]
+    },
+    {
+      "title": "基于 RAG 搭建的企业向量知识库,超过 3 跳推理直接拉胯",
+      "url": "https://developer.cloud.tencent.com/article/2739464",
+      "source": "腾讯云开发者社区",
+      "category": "domestic",
+      "published": "2026-09-08",
+      "summary": "引用 UC Berkeley SkyLab + Google DeepMind 基准(23 套企业级 RAG 配置在 1 万道多跳题上正确率仅 8%),从乘法衰减的数学本质解释向量 RAG 的 3 跳天花板,并给出混合路由工程方案。",
+      "key_points": [
+        "纯向量 RAG 3 跳准确率跌至 15%,GraphRAG 稳定在 82-86%,预结构化知识图谱跳数越深越准",
+        "五大失效模式:检索链不完整(63%)、幻觉桥接(43%)、实体消歧失败、信心欺骗、时序推理失败",
+        "务实方案是混合路由:单跳走向量、2 跳混合、3 跳以上走图遍历、时序敏感走 STAR-RAG",
+        "代价对照:GraphRAG 索引成本高 10-40 倍、查询延迟 2.3 倍"
+      ],
+      "effect": "SyncSoft AI 混合路由项目使错误上下文减少约一半且中位延迟不变;给出金融场景 4 跳查询遗漏条款致 230 万美元风险敞口的具体案例。",
+      "repro_level": "高",
+      "repro_note": "混合路由架构与跳数决策策略可直接借鉴到自建知识库。",
+      "heat": "深度技术长文",
+      "tags": [
+        "多跳推理",
+        "混合路由",
+        "GraphRAG"
+      ]
+    },
+    {
+      "title": "知识库平台技术架构(2026):安全边界、存储与检索、本体工程与评估控制面",
+      "url": "https://cndevops.com/knowledge-base-platform-arch-20261007-22/",
+      "source": "cndevops",
+      "category": "domestic",
+      "published": "2026-10-07",
+      "summary": "整合 2026 年多份中英文权威来源,回答“知识库平台安全边界应建在哪一层”——核心命题:访问控制必须落在检索层而非应用层,“检索之后再过滤已经太晚,模型已经看过内容了”。",
+      "key_points": [
+        "“形/图/值/用”四层分工:本体/知识图谱/向量库/RAG,业务库是唯一权威、数据单向流入图谱",
+        "新鲜度即安全:embedding lag 与 retrieval debt 两个指标须从第一天起度量",
+        "四层检索精度基准:混合 RAG 88-95% → CRAG 94-98% → 企业 GraphRAG+多智能体 97-99.5%",
+        "本体工程化:先建模 5-10 个核心实体,schema-as-code + CI 校验(OWL 一致性 + SHACL)"
+      ],
+      "effect": "给出以“安全边界”为主线的 30/60/90 天落地路线;引用 Thoughtworks 雷达“上下文工程”5 个月内从 Assess 跳级到 Adopt 的信号。",
+      "repro_level": "高",
+      "repro_note": "工程清单可直接作为内网知识库平台的建设规范参考。",
+      "heat": "架构综述",
+      "tags": [
+        "平台架构",
+        "安全边界",
+        "评估"
+      ]
+    },
+    {
+      "title": "2026 爆火的「本体」:给大模型装上业务世界观",
+      "url": "https://juejin.cn/post/7684080641566834703",
+      "source": "稀土掘金",
+      "category": "domestic",
+      "published": "2026-09-11",
+      "summary": "面向开发者的本体科普+实战长文:用零售“销售额口径差 30%”等例子讲清本体价值,厘清本体/知识图谱/ER 图/分类体系的边界,分析 2026 年爆火原因——Agent 时代语义偏差成本指数级上升 + 大模型把构建成本降低 5-10 倍 + Palantir 商业验证。",
+      "key_points": [
+        "“分类体系是本体的子集,本体是知识图谱的骨架”",
+        "技术标准栈 RDF/RDFS/OWL,骨架法/Methontology/TOVE 三种构建方法论",
+        "Apache Jena 实战:零售本体建类/属性/实例/RDFS 推理完整代码",
+        "三问鉴别“换皮本体”:能否逻辑推理/一致性校验/跨系统语义映射"
+      ],
+      "effect": "给出“大模型干 80% 粗活、人工干 20% 校验”的二八经验;工业制造、金融、政务为落地最快三行业。",
+      "repro_level": "高",
+      "repro_note": "Apache Jena 开源,文中 Java 代码可直接在内网环境跑通验证。",
+      "heat": "掘金热文",
+      "tags": [
+        "本体入门",
+        "OWL",
+        "实战"
+      ]
+    },
+    {
+      "title": "微信 AI 团队开源 WeKnora:知识库不再只动嘴,还能“动手”执行",
+      "url": "https://www.oschina.net/news/502612",
+      "source": "开源中国",
+      "category": "domestic",
+      "published": "2026-09-20",
+      "summary": "腾讯微信 AI 团队开源的企业级知识管理框架 WeKnora(GitHub 23.7k star)重大更新:引入 anydoc 解析与 GraphRAG 技术构建实体关系图谱支持深度推理;通过 SkillSandboxRuntime 让知识库从“只会回答”升级为“能执行操作”。",
+      "key_points": [
+        "RAG 问答(向量+BM25 混合检索、RRF 融合、Rerank)+ Agent 推理 + 自动 Wiki 三合一",
+        "v0.8.2:Agent 可操作本机浏览器、以 MCP Server 对外提供知识库、对话分叉与回滚",
+        "支持导入 PDF/Word/网页/飞书文档,Docker 私有化部署"
+      ],
+      "effect": "源自微信对话平台核心技术,已成为国产 Agentic RAG 开源代表;腾讯云轻量服务器已上线一键部署镜像。",
+      "repro_level": "高",
+      "repro_note": "国产开源、Docker 私有化部署、可接本地模型,内网落地阻力最小的选项之一。",
+      "heat": "GitHub 23.7k",
+      "tags": [
+        "国产开源",
+        "Agentic RAG",
+        "腾讯"
+      ]
+    },
+    {
+      "title": "Agents don't need memory, they need documentation(HN 391 分热帖)",
+      "url": "https://news.ycombinator.com/item?id=49945933",
+      "source": "Hacker News / liao.gg",
+      "category": "international",
+      "published": "2026-10-03",
+      "summary": "作者炮轰当前所有“Agent 记忆插件”本质都是同一套 RAG(切片→向量库→每次 prompt 注入 top-5),存在相似度召回不可靠、上下文丢失、把过去当真理、无法审计等系统性缺陷;主张 Agent 需要的不是“记忆”而是“文档”——由 Agent 自己维护的结构化知识工作区,并开源了 Operator Memory。",
+      "key_points": [
+        "记忆插件 = 换皮 RAG:召回靠相似度而非正确性/时效性",
+        "文档化知识四支柱:内容、可发现性、新鲜度、纪律性",
+        "Markdown on disk + Git:可 diff、可 review、可共享、零基础设施",
+        "HN 311 条评论激辩,是近一月该领域讨论度最高的文章"
+      ],
+      "effect": "把 Agent 记忆从向量召回范式重新定义为“Agent 维护的活文档”范式,催生 OKF 等 Git 原生记忆生态项目(HN 81 分)。",
+      "repro_level": "高",
+      "repro_note": "纯文件 + Git 思路,零外部依赖,内网可立即实践。",
+      "heat": "HN 391 分 · 311 评论",
+      "tags": [
+        "Agent记忆",
+        "范式之争",
+        "Git原生"
+      ]
+    },
+    {
+      "title": "Narrow and Deep:用「本体塔」作为 LLM Agent 操控工业设备的知识底座",
+      "url": "http://arxiv.org/abs/2610.11768v1",
+      "source": "arXiv",
+      "category": "international",
+      "published": "2026-10-08",
+      "summary": "针对 LLM Agent 操控工业能源设备的场景,提出“本体塔(ontology tower)”概念:与建筑本体“宽而浅”不同,工业单设备系统需要“窄而深”的本体——少量实体、每个实体挂载大量知识;运行日志可持续沉淀为知识节点,让本体随运行增长。",
+      "key_points": [
+        "知识深化两途径:由测点经物理关系推导的量 + 运行日志沉淀的经验教训节点",
+        "明确提出 narrow-and-deep 与 Brick/Haystack 式 wide-and-shallow 的结构性差异",
+        "在真实低湿空气处理测试装置上、由 PLC 每日运行验证"
+      ],
+      "effect": "少见的“本体落地工业 Agent”实证:本体作为 Agent 操控物理设备的知识底座在真实工厂测试台跑通,对半导体设备智能管控有直接借鉴意义。",
+      "repro_level": "中",
+      "repro_note": "论文方法可复现,但需要自有设备数据与 PLC 环境配合验证。",
+      "heat": "arXiv eess.SY / cs.AI",
+      "tags": [
+        "本体",
+        "工业Agent",
+        "实证"
+      ]
+    },
+    {
+      "title": "You Built a Knowledge Graph from 1M Documents. Can You Trust It?",
+      "url": "https://memgraph.com/blog/can-you-trust-your-knowledge-graph",
+      "source": "Memgraph 官方博客",
+      "category": "international",
+      "published": "2026-10-11",
+      "summary": "区分“文档结构图”(文档→页→chunk,便宜、确定)与真正的语义知识图谱(实体消歧、关系抽取、跨文档对齐),追问一个被忽视的问题:百万级文档构建出的图如何验证正确性?错误的边会进入检索、被推理引用、产生“下游职业生涯”。",
+      "key_points": [
+        "结构图 ≠ 知识图谱:chunk 相连不等于表达了文档中的知识",
+        "规模化的核心难题从“抽取”变成“恢复”——找到并修复第 643,817 个文档产生的错误边",
+        "建议每条边带来源 chunk 指针 + 抽取运行记录(模型、prompt 版本、日期)"
+      ],
+      "effect": "把 KG 质量从学术问题重新定位为运营/工程问题,给出可操作的边级溯源实践。",
+      "repro_level": "高",
+      "repro_note": "溯源实践(边级来源指针 + 运行记录)可直接加入自建抽图管线。",
+      "heat": "HN 热议(新发)",
+      "tags": [
+        "知识图谱",
+        "数据质量",
+        "可审计"
+      ]
+    },
+    {
+      "title": "APOLO:面向本体学习的自动 Prompt 优化",
+      "url": "http://arxiv.org/abs/2609.34540v1",
+      "source": "arXiv",
+      "category": "international",
+      "published": "2026-09-28",
+      "summary": "把本体学习显式建模为 LLM 模块上的 prompt 优化问题:先用多 Agent 系统从专家本体反向生成“文本-本体”配对数据,再提出贪心与自回归两种学习器架构,用 GEPA(贪心进化式 prompt 优化器)优化——无需人工标注、无需微调。",
+      "key_points": [
+        "多 Agent 合成训练数据,绕过本体标注稀缺瓶颈",
+        "Prompt 优化替代微调,降低本体学习的领域适配成本",
+        "贪心与自回归两种学习器架构的对比设计"
+      ],
+      "effect": "为自动化本体构建提供无标注、无微调的新路径,直接利好企业知识图谱冷启动。",
+      "repro_level": "中",
+      "repro_note": "论文方法,GEPA 优化器开源可复现;数据合成环节需本地 LLM 支撑。",
+      "heat": "arXiv cs.AI",
+      "tags": [
+        "本体学习",
+        "Prompt优化",
+        "多智能体"
+      ]
+    },
+    {
+      "title": "post-graph-rag:PostgreSQL 原生的双时态 Graph RAG 引擎",
+      "url": "https://github.com/crajah/post-graph-rag",
+      "source": "Show HN / arXiv",
+      "category": "international",
+      "published": "2026-09-10",
+      "summary": "指出 Graph RAG 要付三次代价:基础设施(三套存储需同步)、质量(不校验的抽取输出存入“什么都没断言”的边)、时间(只增不删的图混淆新旧事实)。post-graph-rag 把 embedding、规范实体图、社区摘要全部放进一个 PostgreSQL,入库前校验,双时态设计让新事实取代旧事实。",
+      "key_points": [
+        "单库(pgvector + 边表)替代向量库+图库+文档库,消灭同步问题",
+        "入库校验:模糊谓词、代词实体名、无量纲数值一律拒绝",
+        "解决“旧 CFO 仍是 CFO”类时效错误;配套论文 arXiv:2608.24921"
+      ],
+      "effect": "给出开源、可自建、面向时效性企业知识(组织架构/人事变更)的 Graph RAG 参考实现。",
+      "repro_level": "高",
+      "repro_note": "PostgreSQL 单库架构,内网部署门槛极低;项目较新,生产使用需自行打磨。",
+      "heat": "Show HN",
+      "tags": [
+        "双时态",
+        "PostgreSQL",
+        "数据质量"
+      ]
+    }
+  ]
+}

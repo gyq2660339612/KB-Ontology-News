@@ -1,0 +1,11 @@
+# 含 SMTP 授权码, 禁止提交 —— 仓库内使用 config.example.yaml 模板
+config.yaml
+
+# 生成物
+output/
+data/raw_*.json
+
+# Python
+__pycache__/
+*.pyc
+.venv/

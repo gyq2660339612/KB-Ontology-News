@@ -1,0 +1,108 @@
+# ============================================================
+# KB-Ontology-News 配置
+# 知识库 / 本体论 / 知识图谱 × AI Agent 每日进展日报
+# ============================================================
+
+report:
+  title: "知识库前沿新闻推送"
+  output_dir: "output"
+  # true: 把远程图片下载到 output/assets 并在 HTML 中引用相对路径
+  # —— 内网打开报告时图片也能显示(生成机器需要能访问图片源)
+  localize_images: true
+  max_items_per_section: 10
+
+mail:
+  enabled: true                  # run_daily.py --send-email 时才真正发送
+  # 网易 163 邮箱 SMTP(需先在 163 邮箱设置里开启 SMTP 服务并获得授权码)
+  smtp_host: "smtp.163.com"
+  smtp_port: 465
+  use_ssl: true
+  username: "your_163_account@163.com"
+  # 163 邮箱的 SMTP 授权码. 注意: 明文写在配置里有泄露风险, 勿提交到 git;
+  # 更安全的做法是删除下行, 改用环境变量 KB_NEWS_SMTP_PASSWORD
+  password: ""  # 填 163 邮箱 SMTP 授权码, 或用环境变量
+  password_env: "KB_NEWS_SMTP_PASSWORD"
+  from_addr: "your_163_account@163.com"
+  to_addrs:
+    - "your_target@example.com"
+  subject_prefix: "【知识库前沿新闻推送】"
+
+network:
+  timeout: 20
+  retries: 2
+  # 内网如需 HTTP 代理访问外网,在此配置(例: {"https": "http://proxy.corp:8080"})
+  proxies: {}
+  user_agent: "KB-Ontology-News/0.1 (internal digest bot)"
+
+# 关键词: 既作为 HN/arXiv 检索词,也作为 RSS 条目的相关性过滤词(命中其一即收录)
+# 主题聚焦: 知识库/知识图谱/本体 × AI Agent 最新进展的结合(记忆、上下文工程、Agentic RAG 等)
+keywords:
+  - "knowledge graph"
+  - "knowledge base"
+  - "ontology"
+  - "GraphRAG"
+  - "agentic RAG"
+  - "agent memory"
+  - "context engineering"
+  - "知识图谱"
+  - "知识库"
+  - "本体"
+  - "本体论"
+
+github:
+  enabled: true
+  token_env: "GITHUB_TOKEN"      # 可选; 不设置则走匿名限流(60次/小时,每日一次足够)
+  trending: true                 # 抓取 GitHub Trending 日榜/周榜并按关键词过滤(官方"涨星最快"榜)
+  newborn:                       # 新锐项目: 最近创建且涨星快
+    enabled: true
+    created_within_days: 120
+    min_stars: 500
+    queries:
+      - "knowledge graph agent"
+      - "graphrag"
+      - "ontology llm"
+      - "agent memory"
+      - "context engineering"
+
+hackernews:
+  enabled: true
+  min_points: 10
+  days: 7
+  queries:
+    - "knowledge graph"
+    - "GraphRAG"
+    - "ontology"
+    - "agent memory"
+    - "context engineering"
+    - "retrieval augmented"
+
+arxiv:
+  enabled: true
+  days: 7
+  max_results: 8
+  queries:
+    - 'all:"knowledge graph" AND all:"agent"'
+    - 'all:"ontology" AND all:"large language model"'
+    - 'all:"graph RAG"'
+    - 'all:"agent memory"'
+    - 'all:"knowledge base" AND all:"agent"'
+
+# RSS 收录窗口(天)
+rss_days: 7
+
+# RSS/Atom 源: 国内外论坛. 国内站点 RSS 覆盖率低,失效源会被自动跳过并记日志,
+# 可按需增删(建议内网自建 RSSHub 后把 url 指向内网实例,例如:
+#   - {name: 机器之心, url: "http://rsshub.internal/jiqizhixin/category/ai", category: domestic}
+rss_feeds:
+  - name: "开源中国"
+    url: "https://www.oschina.net/news/rss"
+    category: "domestic"
+    enabled: true
+  - name: "Lobsters"
+    url: "https://lobste.rs/rss"
+    category: "international"
+    enabled: true
+  - name: "Hacker News Best"
+    url: "https://hnrss.org/best"
+    category: "international"
+    enabled: true

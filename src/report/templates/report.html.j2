@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ title }} · {{ date_str }}</title>
+<style>
+  :root{
+    --ink:#1f2937; --sub:#6b7280; --line:#e5e7eb;
+    --brand:#4f46e5; --brand2:#7c3aed;
+    --bg:#f4f5f7; --card:#ffffff;
+    --gh:#24292f; --cn:#c2410c; --intl:#0369a1;
+    --ok:#16a34a; --mid:#d97706; --low:#dc2626;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:"PingFang SC","Microsoft YaHei","Segoe UI",system-ui,sans-serif;
+       background:var(--bg);color:var(--ink);line-height:1.7}
+  a{color:var(--brand);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 20px 60px}
+
+  /* ===== 头部 ===== */
+  header{background:linear-gradient(135deg,#312e81 0%,#4f46e5 55%,#7c3aed 100%);
+         color:#fff;padding:44px 0 36px}
+  header .wrap{padding-bottom:0}
+  .kicker{font-size:13px;letter-spacing:.2em;opacity:.75;text-transform:uppercase}
+  h1{font-size:30px;margin:8px 0 6px;font-weight:700}
+  .meta{font-size:14px;opacity:.85}
+  .meta b{font-weight:600}
+
+  /* ===== 摘要 ===== */
+  .tldr{background:var(--card);border-radius:14px;margin:-24px auto 0;
+        padding:26px 30px;box-shadow:0 8px 30px rgba(31,41,55,.10);position:relative}
+  .tldr h2{font-size:18px;color:var(--brand);margin-bottom:10px}
+  .tldr ol{padding-left:22px}
+  .tldr li{margin:7px 0;font-size:14.5px}
+
+  /* ===== 统计 ===== */
+  .stats{display:flex;gap:14px;flex-wrap:wrap;margin:22px 0 6px}
+  .stat{flex:1;min-width:150px;background:var(--card);border:1px solid var(--line);
+        border-radius:12px;padding:14px 18px}
+  .stat .num{font-size:24px;font-weight:700;color:var(--brand)}
+  .stat .lbl{font-size:13px;color:var(--sub)}
+
+  /* ===== 目录 ===== */
+  .toc{margin:18px 0 8px;font-size:14px;color:var(--sub)}
+  .toc a{margin-right:16px}
+
+  /* ===== 区块 ===== */
+  section{margin-top:34px}
+  .sec-head{display:flex;align-items:baseline;gap:12px;border-bottom:2px solid var(--ink);
+            padding-bottom:8px;margin-bottom:18px}
+  .sec-head h2{font-size:21px}
+  .sec-head .count{font-size:13px;color:var(--sub)}
+  .sec-head .dot{width:10px;height:10px;border-radius:3px;display:inline-block}
+  .dot-github{background:var(--gh)} .dot-domestic{background:var(--cn)} .dot-international{background:var(--intl)}
+
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+  @media(max-width:860px){.grid{grid-template-columns:1fr}}
+
+  /* ===== 卡片 ===== */
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;
+        overflow:hidden;display:flex;flex-direction:column;
+        transition:box-shadow .2s, transform .2s}
+  .card:hover{box-shadow:0 10px 28px rgba(31,41,55,.12);transform:translateY(-2px)}
+  .card-img{position:relative;height:170px;overflow:hidden;background:#e5e7eb}
+  .card-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:2}
+  .ph-letter{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
+             justify-content:center;font-size:44px;font-weight:700;color:#fff;z-index:1}
+  .ph-letter small{font-size:12px;font-weight:400;opacity:.8;margin-top:4px;letter-spacing:.1em}
+  .ph-github{background:linear-gradient(135deg,#24292f,#57606a)}
+  .ph-domestic{background:linear-gradient(135deg,#c2410c,#f59e0b)}
+  .ph-international{background:linear-gradient(135deg,#0369a1,#38bdf8)}
+
+  .card-body{padding:16px 18px 18px;display:flex;flex-direction:column;flex:1}
+  .badges{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;font-size:12px}
+  .badge{padding:1px 9px;border-radius:99px;background:#eef2ff;color:var(--brand);font-weight:600}
+  .badge.src{background:#f3f4f6;color:var(--sub)}
+  .badge.date{background:#f3f4f6;color:var(--sub);font-weight:400}
+  .card-title{font-size:16.5px;font-weight:700;line-height:1.45;margin-bottom:8px}
+  .card-title a{color:var(--ink)}
+  .card-title a:hover{color:var(--brand)}
+  .summary{font-size:14px;color:#374151;margin-bottom:10px}
+
+  .kps{font-size:13.5px;color:var(--ink);margin:2px 0 10px;padding-left:0;list-style:none}
+  .kps li{padding-left:16px;position:relative;margin:4px 0}
+  .kps li::before{content:"▸";position:absolute;left:0;color:var(--brand)}
+
+  .effect{font-size:13.5px;background:#f0fdf4;border-left:3px solid var(--ok);
+          padding:8px 12px;border-radius:0 8px 8px 0;margin-bottom:10px}
+  .effect b{color:var(--ok)}
+  .repro{margin-top:auto;font-size:13px;display:flex;gap:8px;align-items:flex-start;
+         background:#f8fafc;border:1px dashed var(--line);border-radius:8px;padding:8px 12px}
+  .repro .lv{flex-shrink:0;font-weight:700;padding:0 8px;border-radius:6px;color:#fff;font-size:12px;line-height:20px;margin-top:2px}
+  .lv-高{background:var(--ok)} .lv-中{background:var(--mid)} .lv-低{background:var(--low)}
+  .repro span{color:var(--sub)}
+
+  /* ===== 紧凑列表(论坛版块) ===== */
+  .news-list{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .news-row{padding:12px 20px;border-bottom:1px solid var(--line)}
+  .news-row:last-child{border-bottom:none}
+  .news-row:hover{background:#fafafa}
+  .row-badges{display:inline-flex;gap:6px;flex-wrap:wrap;font-size:12px;margin-right:8px;vertical-align:2px}
+  .row-title{font-size:15px;font-weight:600;line-height:1.5}
+  .row-summary{font-size:13px;color:#4b5563;margin-top:3px;line-height:1.6}
+
+  /* ===== 内网指南 ===== */
+  .guide{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:24px 28px}
+  .guide h2{font-size:19px;margin-bottom:12px}
+  .guide ul{padding-left:20px;font-size:14px}
+  .guide li{margin:8px 0}
+  .guide code{background:#f3f4f6;padding:1px 6px;border-radius:5px;font-size:12.5px;
+              font-family:Consolas,Menlo,monospace;color:#be185d}
+  .legend{display:flex;gap:16px;font-size:13px;color:var(--sub);margin:10px 0 4px;flex-wrap:wrap}
+  .legend .lv{padding:0 8px;border-radius:6px;color:#fff;font-size:12px;font-weight:700}
+
+  footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);
+         font-size:12.5px;color:var(--sub)}
+  @media print{.card{break-inside:avoid}.card:hover{transform:none;box-shadow:none}}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="kicker">Knowledge Base × Agent · Frontier Daily</div>
+    <h1>{{ title }}</h1>
+    <div class="meta">📅 <b>{{ date_str }}</b> ・ 第 {{ issue }} 期 ・ 共收录 <b>{{ stats.total }}</b> 条 ・
+      信息源：GitHub / Hacker News / arXiv / 国内技术社区</div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- 今日摘要 -->
+  <div class="tldr">
+    <h2>📌 今日摘要</h2>
+    <ol>
+      {% for h in highlights %}<li>{{ h }}</li>{% endfor %}
+    </ol>
+  </div>
+
+  <!-- 统计 -->
+  <div class="stats">
+    <div class="stat"><div class="num">{{ stats.total }}</div><div class="lbl">收录条目</div></div>
+    <div class="stat"><div class="num">{{ stats.github }}</div><div class="lbl">GitHub 项目</div></div>
+    <div class="stat"><div class="num">{{ stats.domestic }}</div><div class="lbl">国内精选</div></div>
+    <div class="stat"><div class="num">{{ stats.international }}</div><div class="lbl">国际精选</div></div>
+  </div>
+
+  <!-- 目录 -->
+  <div class="toc">跳转：
+    {% for s in sections %}<a href="#{{ s.key }}">{{ s.name }}</a>{% endfor %}
+    <a href="#guide">内网可复现性说明</a>
+  </div>
+
+  <!-- 正文区块 -->
+  {% for s in sections %}
+  <section id="{{ s.key }}">
+    <div class="sec-head">
+      <span class="dot dot-{{ s.key }}"></span>
+      <h2>{{ s.name }}</h2>
+      <span class="count">{{ s["items"] | length }} 条</span>
+    </div>
+    {% if s.key == "github" %}
+    <div class="grid">
+      {% for item in s["items"] %}
+      <article class="card">
+        <div class="card-img placeholder ph-github">
+          {% if item.image_url %}
+          <img src="{{ item.image_url }}" alt="{{ item.title }}" loading="lazy"
+               onerror="this.style.display='none'">
+          {% endif %}
+          <span class="ph-letter">{{ item.source | first(1) }}<small>{{ item.source }}</small></span>
+        </div>
+        <div class="card-body">
+          <div class="badges">
+            <span class="badge src">{{ item.source }}</span>
+            {% if item.published %}<span class="badge date">{{ item.published }}</span>{% endif %}
+            {% if item.heat %}<span class="badge">{{ item.heat }}</span>{% endif %}
+          </div>
+          <div class="card-title"><a href="{{ item.url }}" target="_blank" rel="noopener">{{ item.title }}</a></div>
+          {% if item.summary %}<div class="summary">{{ item.summary }}</div>{% endif %}
+          {% if item.key_points %}
+          <ul class="kps">
+            {% for kp in item.key_points[:4] %}<li>{{ kp }}</li>{% endfor %}
+          </ul>
+          {% endif %}
+          {% if item.effect %}
+          <div class="effect"><b>⚡ 效果</b> ｜ {{ item.effect }}</div>
+          {% endif %}
+          {% if item.repro_level %}
+          <div class="repro">
+            <span class="lv lv-{{ item.repro_level }}">内网复现·{{ item.repro_level }}</span>
+            <span>{{ item.repro_note }}</span>
+          </div>
+          {% endif %}
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="news-list">
+      {% for item in s["items"] %}
+      <div class="news-row">
+        <div>
+          <span class="row-badges">
+            <span class="badge src">{{ item.source }}</span>
+            {% if item.published %}<span class="badge date">{{ item.published }}</span>{% endif %}
+            {% if item.heat %}<span class="badge">{{ item.heat }}</span>{% endif %}
+          </span>
+          <a class="row-title" href="{{ item.url }}" target="_blank" rel="noopener">{{ item.title }}</a>
+        </div>
+        {% if item.summary %}<div class="row-summary">{{ item.summary }}</div>{% endif %}
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </section>
+  {% endfor %}
+
+  <!-- 内网可复现性说明 -->
+  <section id="guide">
+    <div class="guide">
+      <h2>🖥 内网可复现性说明</h2>
+      <div class="legend">
+        图例：
+        <span><span class="lv lv-高">高</span> 纯开源/可镜像,内网直接落地</span>
+        <span><span class="lv lv-中">中</span> 需替换外部依赖(API/模型权重)</span>
+        <span><span class="lv lv-低">低</span> 强依赖外网 SaaS,仅能借鉴思路</span>
+      </div>
+      {% if intranet_guide %}
+      <ul>
+        {% for g in intranet_guide %}<li>{{ g }}</li>{% endfor %}
+      </ul>
+      {% endif %}
+    </div>
+  </section>
+
+  <footer>
+    <p>本报告由 KB-Ontology-News 自动生成 ・ 信息源:GitHub API / Hacker News(Algolia)/ arXiv / RSS 聚合 ・
+       摘要与要点由编辑流程整理,点击标题可跳转原文。</p>
+    <p>⚠️ 条目热度(star/分数)为采集时刻快照;许可证与合规信息请在引入内部项目前二次确认。</p>
+  </footer>
+</div>
+</body>
+</html>
