@@ -9,3 +9,6 @@ data/raw_*.json
 __pycache__/
 *.pyc
 .venv/
+
+# 日志
+logs/

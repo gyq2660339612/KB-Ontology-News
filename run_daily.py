@@ -86,8 +86,47 @@ def sync_pages(html_path: str) -> str:
     return docs
 
 
+def pipeline(from_data: str | None = None, send_email: bool = False,
+             pages: bool = False, date_str: str | None = None,
+             config_path: str = "config.yaml", output: str | None = None) -> str:
+    """完整流水线: 采集(或离线数据) -> 生成报告 -> (可选)Pages -> (可选)邮件。
+    供 CLI 和定时调度器(scheduler.py)共用。返回报告路径。"""
+    cfg = load_config(config_path)
+    date_str = date_str or datetime.now().strftime("%Y-%m-%d")
+
+    if from_data:
+        log.info("离线模式: 从 %s 读取数据", from_data)
+        items, highlights, guide, d = load_from_json(from_data)
+        date_str = d or date_str
+    else:
+        log.info("在线采集模式")
+        items = collect_all(cfg)
+        highlights, guide = [], []
+        raw = save_raw(items, date_str)
+        log.info("原始数据已保存: %s (%d 条)", raw, len(items))
+
+    if not items:
+        raise RuntimeError("没有任何条目,报告未生成。请检查网络/代理或数据源配置。")
+
+    out_dir = output or os.path.join(BASE_DIR, cfg.get("report", {}).get("output_dir", "output"))
+    html_path = generate(items, cfg, highlights=highlights, intranet_guide=guide,
+                         date_str=date_str, out_dir=out_dir)
+    log.info("报告已生成: %s", html_path)
+
+    if pages:
+        log.info("GitHub Pages 目录已更新: %s", sync_pages(html_path))
+
+    if send_email:
+        from src.mailer import send_report
+        send_report(html_path, cfg, date_str,
+                    items=items, highlights=highlights, intranet_guide=guide)
+        log.info("邮件已发送")
+
+    return html_path
+
+
 def main() -> None:
-    ap = argparse.ArgumentParser(description="知识库与本体论 AI 进展日报")
+    ap = argparse.ArgumentParser(description="知识库前沿新闻推送")
     ap.add_argument("--config", default="config.yaml")
     ap.add_argument("--from-data", help="跳过采集,用指定 JSON 数据生成报告")
     ap.add_argument("--send-email", action="store_true", help="生成后发送邮件")
@@ -96,37 +135,14 @@ def main() -> None:
     ap.add_argument("--output", default=None, help="输出目录(默认 config 中 report.output_dir)")
     args = ap.parse_args()
 
-    cfg = load_config(args.config)
-
-    if args.from_data:
-        log.info("离线模式: 从 %s 读取数据", args.from_data)
-        items, highlights, guide, date_str = load_from_json(args.from_data)
-        date_str = date_str or args.date
-    else:
-        log.info("在线采集模式")
-        items = collect_all(cfg)
-        highlights, guide, date_str = [], [], args.date
-        raw = save_raw(items, date_str)
-        log.info("原始数据已保存: %s (%d 条)", raw, len(items))
-
-    if not items:
-        log.error("没有任何条目,报告未生成。请检查网络/代理或数据源配置。")
+    try:
+        html_path = pipeline(from_data=args.from_data, send_email=args.send_email,
+                             pages=args.pages, date_str=args.date,
+                             config_path=args.config, output=args.output)
+    except RuntimeError as e:
+        log.error("%s", e)
         sys.exit(1)
-
-    out_dir = args.output or os.path.join(BASE_DIR, cfg.get("report", {}).get("output_dir", "output"))
-    html_path = generate(items, cfg, highlights=highlights, intranet_guide=guide,
-                         date_str=date_str, out_dir=out_dir)
-    print(f"\n✅ 报告已生成: {html_path}")
-
-    if args.pages:
-        docs_dir = sync_pages(html_path)
-        print(f"✅ GitHub Pages 目录已更新: {docs_dir}")
-
-    if args.send_email:
-        from src.mailer import send_report
-        send_report(html_path, cfg, date_str,
-                    items=items, highlights=highlights, intranet_guide=guide)
-        print("✅ 邮件已发送")
+    print(f"\n✅ 完成: {html_path}")
 
 
 if __name__ == "__main__":

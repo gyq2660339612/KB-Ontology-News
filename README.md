@@ -42,11 +42,25 @@ python run_daily.py --send-email
 (在 163 邮箱 设置 → POP3/SMTP/IMAP 中开启并获取);密码建议改从环境变量
 `KB_NEWS_SMTP_PASSWORD` 读取,避免明文留在配置文件里。
 
-## 每日自动运行
+## 定时自动运行(每周一、周四 08:00)
 
-- **Windows 任务计划程序**:新建任务 → 触发器"每天 08:30" → 操作
-  `D:\Yiqi\code\KB-Ontology-News\py312\python.exe run_daily.py --send-email`,起始位置填项目目录。
-- **Linux cron**:`30 8 * * * cd /path/KB-Ontology-News && python run_daily.py --send-email >> logs/cron.log 2>&1`
+**方式一:内置调度器(推荐)**
+
+```bash
+python scheduler.py          # 常驻运行, 到点自动 采集→生成→Pages→发邮件
+python scheduler.py --once   # 立即执行一次
+```
+
+调度规则在 `config.yaml` 的 `schedule` 段(`days`/`time`/`grace_minutes`,带 30 分钟
+补跑窗口:机器 08:05 才开机会补跑,下午开机不会误发)。日志在 `logs/scheduler.log`。
+长期运行建议用 Windows 任务计划程序把 `scheduler.py` 设为**开机启动**(程序填
+`python.exe`,参数 `scheduler.py`,起始位置填项目目录)。
+
+**方式二:Windows 任务计划程序直接定时**
+
+新建任务 → 触发器"每周,勾选周一、周四,08:00" → 操作
+`python.exe run_daily.py --pages --send-email`,起始位置填项目目录;
+执行后 `git add docs && git commit -m daily && git push` 即更新 Pages 网站。
 
 ## 邮件版式(内网手机端适配)
 

@@ -25,7 +25,14 @@ mail:
   from_addr: "your_163_account@163.com"
   to_addrs:
     - "your_target@example.com"
+    - "second_recipient@example.com"
   subject_prefix: "【知识库前沿新闻推送】"
+
+# 定时调度(scheduler.py 读取): 每周一、周四 08:00 发送
+schedule:
+  days: [1, 4]            # ISO 星期: 周一=1, 周四=4
+  time: "08:00"
+  grace_minutes: 30       # 补跑窗口: 08:00-08:30 之间开机/唤醒仍会执行
 
 network:
   timeout: 20
